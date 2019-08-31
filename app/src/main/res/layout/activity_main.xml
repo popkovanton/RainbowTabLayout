@@ -5,5 +5,14 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.watermelonman.rainbowtablayoutlibrary.RainbowTabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_below="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </RelativeLayout>
