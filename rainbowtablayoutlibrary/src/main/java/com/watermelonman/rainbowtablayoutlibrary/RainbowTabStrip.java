@@ -161,8 +161,11 @@ public class RainbowTabStrip extends LinearLayout {
     private void drawIndicator(Canvas canvas, int left, int right, int height,
                                int color) {
         mSelectedIndicatorPaint.setColor(color);
-        Path path = RoundRect.roundedRect(left, 0, right,
-                height, 20, 20, false, false, true, true);
+        Path path = new TabRect.Builder()
+                .setLeft(left)
+                .setRight(right)
+                .setBottom(height)
+                .create();
         canvas.drawPath(path, mSelectedIndicatorPaint);
     }
 

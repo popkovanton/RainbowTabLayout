@@ -4,12 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 
 import com.watermelonman.rainbowtablayoutlibrary.RainbowTabLayout;
 
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private final static int TABS_COUNT = 8;
