@@ -1,4 +1,4 @@
-package com.watermelonman.rainbowtablayoutlibrary;
+package com.popkovanton.rainbowtablayoutlibrary;
 
 import android.content.Context;
 import android.graphics.Canvas;

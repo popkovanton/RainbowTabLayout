@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
-    <com.watermelonman.rainbowtablayoutlibrary.RainbowTabLayout
+    <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

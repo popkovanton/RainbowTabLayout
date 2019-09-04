@@ -1,4 +1,4 @@
-package com.watermelonman.rainbowtablayoutexample;
+package com.popkovanton.rainbowtablayoutexample;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
@@ -6,7 +6,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.graphics.Color;
 import android.os.Bundle;
 
-import com.watermelonman.rainbowtablayoutlibrary.RainbowTabLayout;
+import com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout;
 
 
 public class MainActivity extends AppCompatActivity {

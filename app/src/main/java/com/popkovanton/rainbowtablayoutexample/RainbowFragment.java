@@ -1,4 +1,4 @@
-package com.watermelonman.rainbowtablayoutexample;
+package com.popkovanton.rainbowtablayoutexample;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

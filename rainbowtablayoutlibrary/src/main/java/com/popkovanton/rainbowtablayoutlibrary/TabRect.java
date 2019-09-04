@@ -1,4 +1,4 @@
-package com.watermelonman.rainbowtablayoutlibrary;
+package com.popkovanton.rainbowtablayoutlibrary;
 
 import android.graphics.Path;
 
