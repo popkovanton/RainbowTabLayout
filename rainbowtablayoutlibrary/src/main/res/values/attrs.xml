@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RainbowTabLayout">
+        <attr name="rtl_indicator" format="boolean" />
+        <attr name="rtl_tabMinWidthByMax" format="boolean" />
+        <attr name="rtl_distributeEvenly" format="boolean" />
+        <attr name="rtl_fontFamily" format="reference" />
+        <attr name="rtl_tabViewPadding" format="integer" />
+        <attr name="rtl_tabViewTextSize" format="integer" />
+    </declare-styleable>
+</resources>

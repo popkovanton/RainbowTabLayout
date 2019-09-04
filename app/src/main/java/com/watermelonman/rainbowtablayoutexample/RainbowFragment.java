@@ -12,11 +12,11 @@ import androidx.fragment.app.Fragment;
 public class RainbowFragment extends Fragment {
     public static final String ARG_COLOR = "ARG_COLOR";
 
-    private int mColor;
+    private String mColor;
 
-    public static RainbowFragment newInstance(int color) {
+    public static RainbowFragment newInstance(String color) {
         Bundle args = new Bundle();
-        args.putInt(ARG_COLOR, color);
+        args.putString(ARG_COLOR, color);
         RainbowFragment fragment = new RainbowFragment();
         fragment.setArguments(args);
         return fragment;
@@ -25,7 +25,7 @@ public class RainbowFragment extends Fragment {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mColor = getArguments().getInt(ARG_COLOR);
+            mColor = getArguments().getString(ARG_COLOR);
         }
     }
 
@@ -33,8 +33,7 @@ public class RainbowFragment extends Fragment {
                                        Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page, container, false);
         TextView textView = view.findViewById(R.id.textView);
-        textView.setText("Color " + mColor);
-        view.setBackgroundColor(mColor);
+        textView.setText(mColor);
         return view;
     }
 }

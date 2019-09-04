@@ -3,12 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
     <com.watermelonman.rainbowtablayoutlibrary.RainbowTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:rtl_indicator="true"
+        app:rtl_tabMinWidthByMax="false"
+        app:rtl_distributeEvenly="false"
+        app:rtl_fontFamily="@font/roboto_regular"
+        app:rtl_tabViewPadding="8"
+        app:rtl_tabViewTextSize="18"/>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewpager"

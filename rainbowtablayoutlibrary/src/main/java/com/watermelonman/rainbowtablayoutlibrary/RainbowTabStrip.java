@@ -23,6 +23,8 @@ public class RainbowTabStrip extends LinearLayout {
     private static final int DEFAULT_DIVIDER_THICKNESS_DIPS = 1;
     private static final float DEFAULT_DIVIDER_HEIGHT = 0.5f;
 
+    private boolean indicator;
+
     private final int mTopBorderThickness;
     private final Paint mTopBorderPaint;
 
@@ -84,6 +86,10 @@ public class RainbowTabStrip extends LinearLayout {
         invalidate();
     }
 
+    public void setIndicator(boolean indicator) {
+        this.indicator = indicator;
+    }
+
     void onViewPagerPageChanged(int position, float positionOffset) {
         mSelectedPosition = position;
         mSelectionOffset = positionOffset;
@@ -128,7 +134,7 @@ public class RainbowTabStrip extends LinearLayout {
                 int previousColor = tabColorizer.getIndicatorColor(mSelectedPosition);
                 titlePreviousColor = blendColors(previousColor, WHITE, mSelectionOffset);
             }
-            drawIndicator(canvas, left, right, height, color);
+            drawRainbow(canvas, left, right, height, color);
 
             if (mSelectedPosition < (getChildCount() - 1)) {
                 textView = (TextView) getChildAt(mSelectedPosition + 1);
@@ -146,7 +152,9 @@ public class RainbowTabStrip extends LinearLayout {
             int right = selectedTitle.getRight();
             mTopBorderPaint.setColor(color);
             // Thin underline along the entire bottom edge
-            canvas.drawRect(left, 0, right, mTopBorderThickness, mTopBorderPaint);
+            if (indicator) {
+                canvas.drawRect(left, 0, right, mTopBorderThickness, mTopBorderPaint); //todo indicator position
+            }
             if (mSelectionOffset <= 0f) {
                 textView = (TextView) getChildAt(i);
                 if (mSelectedPosition == i) {
@@ -158,8 +166,8 @@ public class RainbowTabStrip extends LinearLayout {
         }
     }
 
-    private void drawIndicator(Canvas canvas, int left, int right, int height,
-                               int color) {
+    private void drawRainbow(Canvas canvas, int left, int right, int height,
+                             int color) {
         mSelectedIndicatorPaint.setColor(color);
         Path path = new TabRect.Builder()
                 .setLeft(left)

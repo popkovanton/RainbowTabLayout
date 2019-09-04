@@ -10,7 +10,7 @@ import com.watermelonman.rainbowtablayoutlibrary.RainbowTabLayout;
 
 
 public class MainActivity extends AppCompatActivity {
-    private final static int TABS_COUNT = 8;
+    private final static int TABS_COUNT = 7;
     private ViewPager viewPager;
     private RainbowPagerAdapter pagerAdapter;
 
@@ -31,21 +31,21 @@ public class MainActivity extends AppCompatActivity {
 
     private void initTabs() {
         RainbowTabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setColorsForTabs(getColorsForTabs());
-        tabLayout.setTabMinByMax(false);
+        tabLayout.setColorForTabs(
+                Color.parseColor("#FF5959"),
+                Color.parseColor("#30FF45"));
         tabLayout.setViewPager(viewPager);
     }
 
-    private int[] getColorsForTabs() {
-        int[] colors = new int[TABS_COUNT];
-        colors[0] = Color.parseColor("#FF5959");
-        colors[1] = Color.parseColor("#FF9900");
-        colors[2] = Color.parseColor("#FFCC16");
-        colors[3] = Color.parseColor("#30FF45");
-        colors[4] = Color.parseColor("#01E0FF");
-        colors[5] = Color.parseColor("#4BA9FF");
-        colors[6] = Color.parseColor("#9378FF");
-        colors[7] = Color.parseColor("#FD7BF0");
+    private String[] getColorsForTabs() {
+        String[] colors = new String[TABS_COUNT];
+        colors[0] = "Test";
+        colors[1] = "TestTestTest";
+        colors[2] = "TestTestTestTestTestTest";
+        colors[3] = "TestTestTestTestTest";
+        colors[4] = "TestTestTestTest";
+        colors[5] = "Test";
+        colors[6] = "TestTest";
         return colors;
     }
 }
