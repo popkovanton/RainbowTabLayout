@@ -25,6 +25,7 @@ public class RainbowTabStrip extends LinearLayout {
 
     private boolean indicator;
 
+    private IndicatorPosition mIndicatorPosition;
     private final int mTopBorderThickness;
     private final Paint mTopBorderPaint;
 
@@ -41,6 +42,7 @@ public class RainbowTabStrip extends LinearLayout {
 
     private RainbowTabLayout.TabColorizer mCustomTabColorizer;
     private final SimpleTabColorizer mDefaultTabColorizer;
+
 
     RainbowTabStrip(Context context) {
         this(context, null);
@@ -86,8 +88,9 @@ public class RainbowTabStrip extends LinearLayout {
         invalidate();
     }
 
-    public void setIndicator(boolean indicator) {
+    public void setIndicator(boolean indicator, IndicatorPosition mIndicatorPosition) {
         this.indicator = indicator;
+        this.mIndicatorPosition = mIndicatorPosition;
     }
 
     void onViewPagerPageChanged(int position, float positionOffset) {
@@ -151,9 +154,10 @@ public class RainbowTabStrip extends LinearLayout {
             int left = selectedTitle.getLeft();
             int right = selectedTitle.getRight();
             mTopBorderPaint.setColor(color);
-            // Thin underline along the entire bottom edge
+
             if (indicator) {
-                canvas.drawRect(left, 0, right, mTopBorderThickness, mTopBorderPaint); //todo indicator position
+                drawIndicator(canvas, left, right, height, mTopBorderThickness, mTopBorderPaint);
+                //canvas.drawRect(left, 0, right, mTopBorderThickness, mTopBorderPaint); //todo indicator position
             }
             if (mSelectionOffset <= 0f) {
                 textView = (TextView) getChildAt(i);
@@ -163,6 +167,15 @@ public class RainbowTabStrip extends LinearLayout {
                     textView.setTextColor(color);
                 }
             }
+        }
+    }
+
+    private void drawIndicator(Canvas canvas, int left, int right, int height,
+                               int indicatorHeight, Paint paint) {
+        if(mIndicatorPosition == IndicatorPosition.TOP) {
+            canvas.drawRect(left, 0, right, indicatorHeight, paint);
+        } else {
+            canvas.drawRect(left, height - indicatorHeight, right, height, paint);
         }
     }
 

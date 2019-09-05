@@ -53,6 +53,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
     private boolean distributeEvenly;
     private boolean tabMinWidthByMax;
     private boolean indicator;
+    private IndicatorPosition indicatorPosition;
     private int tabViewPadding;
     private int tabViewTextSize;
     private Typeface typeFace;
@@ -74,6 +75,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
             distributeEvenly = a.getBoolean(R.styleable.RainbowTabLayout_rtl_distributeEvenly, false);
             tabMinWidthByMax = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabMinWidthByMax, false);
             indicator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_indicator, true);
+            indicatorPosition = IndicatorPosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_indicatorPosition,0)];
             tabViewPadding = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewPadding, 8);
             tabViewTextSize = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, 17);
             if (a.hasValue(R.styleable.RainbowTabLayout_rtl_fontFamily)) {
@@ -294,7 +296,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
                 setSelectedIndicatorColors(selectedIndicatorColors);
             }
 
-            mTabStrip.setIndicator(indicator);
+            mTabStrip.setIndicator(indicator, indicatorPosition);
         }
     }
 

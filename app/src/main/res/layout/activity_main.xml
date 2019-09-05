@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:rtl_indicator="true"
+        app:rtl_indicatorPosition="BOTTOM"
         app:rtl_tabMinWidthByMax="false"
         app:rtl_distributeEvenly="false"
         app:rtl_fontFamily="@font/roboto_regular"

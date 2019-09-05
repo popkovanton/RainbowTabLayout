@@ -2,6 +2,10 @@
 <resources>
     <declare-styleable name="RainbowTabLayout">
         <attr name="rtl_indicator" format="boolean" />
+        <attr name="rtl_indicatorPosition" format="enum">
+            <enum name="TOP" value="0"/>
+            <enum name="BOTTOM" value="1"/>
+        </attr>
         <attr name="rtl_tabMinWidthByMax" format="boolean" />
         <attr name="rtl_distributeEvenly" format="boolean" />
         <attr name="rtl_fontFamily" format="reference" />
