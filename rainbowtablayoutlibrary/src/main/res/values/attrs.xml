@@ -11,5 +11,6 @@
         <attr name="rtl_fontFamily" format="reference" />
         <attr name="rtl_tabViewPadding" format="integer" />
         <attr name="rtl_tabViewTextSize" format="integer" />
+        <attr name="rtl_titleColor" format="color" />
     </declare-styleable>
 </resources>

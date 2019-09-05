@@ -2,6 +2,7 @@ package com.popkovanton.rainbowtablayoutlibrary;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -57,6 +58,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
     private int tabViewPadding;
     private int tabViewTextSize;
     private Typeface typeFace;
+    private int titleColor;
     private ArrayList<Integer> listOfViewSize;
     private ArrayList<View> listOfView;
 
@@ -70,7 +72,8 @@ public class RainbowTabLayout extends HorizontalScrollView {
 
     public RainbowTabLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RainbowTabLayout, 0, 0);
+        TypedArray a = context.getTheme()
+                .obtainStyledAttributes(attrs, R.styleable.RainbowTabLayout, 0, 0);
         try {
             distributeEvenly = a.getBoolean(R.styleable.RainbowTabLayout_rtl_distributeEvenly, false);
             tabMinWidthByMax = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabMinWidthByMax, false);
@@ -78,6 +81,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
             indicatorPosition = IndicatorPosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_indicatorPosition,0)];
             tabViewPadding = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewPadding, 8);
             tabViewTextSize = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, 17);
+            titleColor = a.getColor(R.styleable.RainbowTabLayout_rtl_titleColor, Color.BLACK);
             if (a.hasValue(R.styleable.RainbowTabLayout_rtl_fontFamily)) {
                 int fontId = a.getResourceId(R.styleable.RainbowTabLayout_rtl_fontFamily, -1);
                 typeFace = ResourcesCompat.getFont(context, fontId);
@@ -116,6 +120,13 @@ public class RainbowTabLayout extends HorizontalScrollView {
     }
 
     /**
+     * Set the color of title text
+     */
+    public void setTitleColor(int titleColor) {
+        this.titleColor = titleColor;
+    }
+
+    /**
      * Set the padding of tab
      */
     public void setTabViewPadding(int tabViewPadding) {
@@ -134,6 +145,13 @@ public class RainbowTabLayout extends HorizontalScrollView {
      */
     public void setIndicator(boolean indicator) {
         this.indicator = indicator;
+    }
+    /**
+     * Init tab indicator position
+     * {@link IndicatorPosition}
+     */
+    public void setIndicatorPosition(IndicatorPosition indicatorPosition) {
+        this.indicatorPosition = indicatorPosition;
     }
 
     /**
@@ -297,6 +315,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
             }
 
             mTabStrip.setIndicator(indicator, indicatorPosition);
+            mTabStrip.setTitleColor(titleColor);
         }
     }
 

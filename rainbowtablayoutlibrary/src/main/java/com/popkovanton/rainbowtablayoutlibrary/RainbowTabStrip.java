@@ -11,8 +11,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import static android.graphics.Color.WHITE;
-
 public class RainbowTabStrip extends LinearLayout {
 
     private static final int DEFAULT_BOTTOM_BORDER_THICKNESS_DIPS = 4;
@@ -39,6 +37,8 @@ public class RainbowTabStrip extends LinearLayout {
 
     private int mSelectedPosition;
     private float mSelectionOffset;
+
+    private int titleColor;
 
     private RainbowTabLayout.TabColorizer mCustomTabColorizer;
     private final SimpleTabColorizer mDefaultTabColorizer;
@@ -93,6 +93,10 @@ public class RainbowTabStrip extends LinearLayout {
         this.mIndicatorPosition = mIndicatorPosition;
     }
 
+    public void setTitleColor(int titleColor) {
+        this.titleColor = titleColor;
+    }
+
     void onViewPagerPageChanged(int position, float positionOffset) {
         mSelectedPosition = position;
         mSelectionOffset = positionOffset;
@@ -115,12 +119,12 @@ public class RainbowTabStrip extends LinearLayout {
             int left = selectedTitle.getLeft();
             int right = selectedTitle.getRight();
             int color = tabColorizer.getIndicatorColor(mSelectedPosition);
-            int titleNextColor = WHITE;
-            int titlePreviousColor = WHITE;
+            int titleNextColor = titleColor;
+            int titlePreviousColor = titleColor;
             if (mSelectionOffset > 0f && mSelectedPosition < (getChildCount() - 1)) {
                 int nextColor = tabColorizer.getIndicatorColor(mSelectedPosition + 1);
 
-                titleNextColor = blendColors(WHITE, nextColor, mSelectionOffset);
+                titleNextColor = blendColors(titleColor, nextColor, mSelectionOffset);
 
                 if (color != nextColor) {
                     color = blendColors(nextColor, color, mSelectionOffset);
@@ -135,7 +139,7 @@ public class RainbowTabStrip extends LinearLayout {
 
             if (mSelectionOffset > 0f) {
                 int previousColor = tabColorizer.getIndicatorColor(mSelectedPosition);
-                titlePreviousColor = blendColors(previousColor, WHITE, mSelectionOffset);
+                titlePreviousColor = blendColors(previousColor, titleColor, mSelectionOffset);
             }
             drawRainbow(canvas, left, right, height, color);
 
@@ -157,12 +161,11 @@ public class RainbowTabStrip extends LinearLayout {
 
             if (indicator) {
                 drawIndicator(canvas, left, right, height, mTopBorderThickness, mTopBorderPaint);
-                //canvas.drawRect(left, 0, right, mTopBorderThickness, mTopBorderPaint); //todo indicator position
             }
             if (mSelectionOffset <= 0f) {
                 textView = (TextView) getChildAt(i);
                 if (mSelectedPosition == i) {
-                    textView.setTextColor(WHITE);
+                    textView.setTextColor(titleColor);
                 } else {
                     textView.setTextColor(color);
                 }

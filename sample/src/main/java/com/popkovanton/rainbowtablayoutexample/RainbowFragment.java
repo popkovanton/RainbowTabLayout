@@ -10,13 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 public class RainbowFragment extends Fragment {
-    public static final String ARG_COLOR = "ARG_COLOR";
+    public static final String ARG_POSITION = "arg_position";
+    private int mPosition;
 
-    private String mColor;
-
-    public static RainbowFragment newInstance(String color) {
+    public static RainbowFragment newInstance(int position) {
         Bundle args = new Bundle();
-        args.putString(ARG_COLOR, color);
+        args.putInt(ARG_POSITION, position);
         RainbowFragment fragment = new RainbowFragment();
         fragment.setArguments(args);
         return fragment;
@@ -25,15 +24,16 @@ public class RainbowFragment extends Fragment {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mColor = getArguments().getString(ARG_COLOR);
+            mPosition = getArguments().getInt(ARG_POSITION);
         }
     }
 
     @Override public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                                        Bundle savedInstanceState) {
+        String title = "Page " + mPosition;
         View view = inflater.inflate(R.layout.fragment_page, container, false);
         TextView textView = view.findViewById(R.id.textView);
-        textView.setText(mColor);
+        textView.setText(title);
         return view;
     }
 }

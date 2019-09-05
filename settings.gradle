@@ -1,2 +1,2 @@
-include ':app', ':rainbowtablayoutlibrary'
+include ':sample', ':rainbowtablayoutlibrary'
 rootProject.name='RainbowTabLayoutExample'

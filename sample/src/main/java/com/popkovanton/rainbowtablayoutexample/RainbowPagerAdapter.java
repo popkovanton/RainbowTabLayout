@@ -7,28 +7,28 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 public class RainbowPagerAdapter extends FragmentPagerAdapter {
-    private String[] titles;
+    private int count;
 
-    public RainbowPagerAdapter(FragmentManager manager, String[] titles) {
+    public RainbowPagerAdapter(FragmentManager manager, int count) {
         super(manager);
-        this.titles = titles;
+        this.count = count;
     }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
         return RainbowFragment.newInstance(
-                titles[position]);
+                position);
     }
 
     @Override
     public int getCount() {
-        return titles.length;
+        return count;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return titles[position];
+        return "Title " + position;
     }
 
 }
