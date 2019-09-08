@@ -17,6 +17,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.popkovanton.rainbowtablayoutlibrary.colorizer.ITabColorizer;
+
 import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -27,14 +29,18 @@ public class RainbowTabLayout extends HorizontalScrollView {
 
     /**
      * Allows complete control over the colors drawn in the tab layout. Set with
-     * {@link #setCustomTabColorizer(TabColorizer)}.
+     * {@link #setCustomTabColorizer(ITabColorizer)}.
      */
     public interface TabColorizer {
 
         /**
-         * @return return the color of the indicator used when {@code position} is selected.
+         * @return return the color of the tabLine used when {@code position} is selected.
          */
         int getIndicatorColor(int position);
+        /**
+         * @return return the color of the separator drawn to the right of {@code position}.
+         */
+        int getSeparatorColor(int position);
 
     }
 
@@ -53,8 +59,8 @@ public class RainbowTabLayout extends HorizontalScrollView {
 
     private boolean distributeEvenly;
     private boolean tabMinWidthByMax;
-    private boolean indicator;
-    private IndicatorPosition indicatorPosition;
+    private boolean tabLine;
+    private TabLinePosition tabLinePosition;
     private int tabViewPadding;
     private int tabViewTextSize;
     private Typeface typeFace;
@@ -77,8 +83,8 @@ public class RainbowTabLayout extends HorizontalScrollView {
         try {
             distributeEvenly = a.getBoolean(R.styleable.RainbowTabLayout_rtl_distributeEvenly, false);
             tabMinWidthByMax = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabMinWidthByMax, false);
-            indicator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_indicator, true);
-            indicatorPosition = IndicatorPosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_indicatorPosition,0)];
+            tabLine = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabLine, true);
+            tabLinePosition = TabLinePosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabLinePosition,0)];
             tabViewPadding = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewPadding, 8);
             tabViewTextSize = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, 17);
             titleColor = a.getColor(R.styleable.RainbowTabLayout_rtl_titleColor, Color.BLACK);
@@ -115,7 +121,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
      * {@link #setSelectedIndicatorColors(int...)} to achieve
      * similar effects.
      */
-    public void setCustomTabColorizer(TabColorizer tabColorizer) {
+    public void setCustomTabColorizer(ITabColorizer tabColorizer) {
         mTabStrip.setCustomTabColorizer(tabColorizer);
     }
 
@@ -141,17 +147,17 @@ public class RainbowTabLayout extends HorizontalScrollView {
     }
 
     /**
-     * Init tab indicator
+     * Init tab tabLine
      */
-    public void setIndicator(boolean indicator) {
-        this.indicator = indicator;
+    public void setTabLine(boolean tabLine) {
+        this.tabLine = tabLine;
     }
     /**
-     * Init tab indicator position
-     * {@link IndicatorPosition}
+     * Init tab tabLine position
+     * {@link TabLinePosition}
      */
-    public void setIndicatorPosition(IndicatorPosition indicatorPosition) {
-        this.indicatorPosition = indicatorPosition;
+    public void setTabLinePosition(TabLinePosition tabLinePosition) {
+        this.tabLinePosition = tabLinePosition;
     }
 
     /**
@@ -314,7 +320,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
                 setSelectedIndicatorColors(selectedIndicatorColors);
             }
 
-            mTabStrip.setIndicator(indicator, indicatorPosition);
+            mTabStrip.setIndicator(tabLine, tabLinePosition);
             mTabStrip.setTitleColor(titleColor);
         }
     }

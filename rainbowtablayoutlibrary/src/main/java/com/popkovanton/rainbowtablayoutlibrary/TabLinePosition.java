@@ -1,5 +1,5 @@
 package com.popkovanton.rainbowtablayoutlibrary;
 
-public enum IndicatorPosition {
+public enum TabLinePosition {
     TOP, BOTTOM
 }

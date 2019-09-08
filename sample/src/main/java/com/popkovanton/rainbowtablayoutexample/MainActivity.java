@@ -8,9 +8,14 @@ import butterknife.ButterKnife;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 
-import com.popkovanton.rainbowtablayoutlibrary.IndicatorPosition;
+import com.popkovanton.rainbowtablayoutlibrary.TabLinePosition;
 import com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private final static int TABS_COUNT = 7;
@@ -24,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initViewPager();
         initTabs();
+        test();
     }
 
     private void initViewPager() {
@@ -35,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
         RainbowTabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setColorForTabs(getColorsForTabs());
         tabLayout.setTitleColor(Color.WHITE);
-        tabLayout.setIndicator(true);
-        tabLayout.setIndicatorPosition(IndicatorPosition.TOP);
+        tabLayout.setTabLine(true);
+        tabLayout.setTabLinePosition(TabLinePosition.TOP);
         tabLayout.setDistributeEvenly(false);
         tabLayout.setTabMinByMax(false);
         tabLayout.setTabViewPadding(8);
@@ -55,5 +61,30 @@ public class MainActivity extends AppCompatActivity {
         colors[5] = getResources().getColor(R.color.indigo);
         colors[6] = getResources().getColor(R.color.violet);
         return colors;
+    }
+
+    private void test() {
+        List<Integer> number = new ArrayList<>();
+
+        number.add(11);
+        number.add(45);
+        number.add(12);
+        number.add(32);
+        number.add(36);
+        boolean even = false;
+        for (Iterator i = number.iterator(); i.hasNext(); even = !even) {
+            i.next();
+            if (even) {
+                i.remove();
+            }
+        }
+
+        for(int num: number){
+            Log.i("test_method", "number int list - " + num);
+        }
+    }
+
+    private boolean isEven(int next) {
+        return next % 2 == 0;
     }
 }

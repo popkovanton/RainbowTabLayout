@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="RainbowTabLayout">
-        <attr name="rtl_indicator" format="boolean" />
-        <attr name="rtl_indicatorPosition" format="enum">
+        <attr name="rtl_tabLine" format="boolean" />
+        <attr name="rtl_tabLinePosition" format="enum">
             <enum name="TOP" value="0"/>
             <enum name="BOTTOM" value="1"/>
         </attr>
