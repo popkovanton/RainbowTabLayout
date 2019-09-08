@@ -20,8 +20,6 @@ dependencies {
 
 ### XML
 
-All you need in your layout is the KonfettiView to render the particles on:
-
 ```XML
 <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
         android:id="@+id/rainbowTabLayout"
