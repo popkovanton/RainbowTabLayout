@@ -37,6 +37,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
          * @return return the color of the tabLine used when {@code position} is selected.
          */
         int getIndicatorColor(int position);
+
         /**
          * @return return the color of the separator drawn to the right of {@code position}.
          */
@@ -51,6 +52,8 @@ public class RainbowTabLayout extends HorizontalScrollView {
     private int mTabViewLayoutId;
     private int mTabViewTextViewId;
     private int[] selectedIndicatorColors = null;
+    private int[] backgroundColors = null;
+    private int[] titleUnselectedColors = null;
 
     private ViewPager mViewPager;
     private ViewPager.OnPageChangeListener mViewPagerPageChangeListener;
@@ -59,12 +62,16 @@ public class RainbowTabLayout extends HorizontalScrollView {
 
     private boolean distributeEvenly;
     private boolean tabMinWidthByMax;
+    private boolean tabIndicator;
     private boolean tabLine;
+    private boolean isDrawSeparator;
+    private boolean isTitleBlend;
+    private TabIndicatorPosition tabIndicatorPosition;
     private TabLinePosition tabLinePosition;
     private int tabViewPadding;
     private int tabViewTextSize;
     private Typeface typeFace;
-    private int titleColor;
+    private int titleSelectedColor;
     private ArrayList<Integer> listOfViewSize;
     private ArrayList<View> listOfView;
 
@@ -83,11 +90,15 @@ public class RainbowTabLayout extends HorizontalScrollView {
         try {
             distributeEvenly = a.getBoolean(R.styleable.RainbowTabLayout_rtl_distributeEvenly, false);
             tabMinWidthByMax = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabMinWidthByMax, false);
-            tabLine = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabLine, true);
-            tabLinePosition = TabLinePosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabLinePosition,0)];
+            tabIndicator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabIndicator, true);
+            tabIndicatorPosition = TabIndicatorPosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabIndicatorPosition, 1)];
+            isTitleBlend = a.getBoolean(R.styleable.RainbowTabLayout_rtl_titleBlend, false);
+            isDrawSeparator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabSeparator, false);
+            tabLine = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabLine, false);
+            tabLinePosition = TabLinePosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabLinePosition, 0)];
             tabViewPadding = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewPadding, 8);
             tabViewTextSize = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, 17);
-            titleColor = a.getColor(R.styleable.RainbowTabLayout_rtl_titleColor, Color.BLACK);
+            titleSelectedColor = a.getColor(R.styleable.RainbowTabLayout_rtl_titleColor, Color.BLACK);
             if (a.hasValue(R.styleable.RainbowTabLayout_rtl_fontFamily)) {
                 int fontId = a.getResourceId(R.styleable.RainbowTabLayout_rtl_fontFamily, -1);
                 typeFace = ResourcesCompat.getFont(context, fontId);
@@ -110,15 +121,19 @@ public class RainbowTabLayout extends HorizontalScrollView {
         addView(mTabStrip, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
-    public void setColorForTabs(int... selectedIndicatorColor) {
+   /* public void setIndicatorColors(int... selectedIndicatorColor) {
         this.selectedIndicatorColors = selectedIndicatorColor;
     }
+
+    public void setBackgroundColors(int... backgroundColors) {
+        this.backgroundColors = backgroundColors;
+    }*/
 
     /**
      * Set the custom {@link TabColorizer} to be used.
      * <p>
      * If you only require simple custmisation then you can use
-     * {@link #setSelectedIndicatorColors(int...)} to achieve
+     * {@link #setIndicatorTabColors(int...)} to achieve
      * similar effects.
      */
     public void setCustomTabColorizer(ITabColorizer tabColorizer) {
@@ -128,8 +143,8 @@ public class RainbowTabLayout extends HorizontalScrollView {
     /**
      * Set the color of title text
      */
-    public void setTitleColor(int titleColor) {
-        this.titleColor = titleColor;
+    public void setTitleSelectedColor(int titleSelectedColor) {
+        this.titleSelectedColor = titleSelectedColor;
     }
 
     /**
@@ -146,12 +161,30 @@ public class RainbowTabLayout extends HorizontalScrollView {
         this.tabViewTextSize = tabViewTextSize;
     }
 
+
+    public void setTabIndicator(boolean tabIndicator) {
+        this.tabIndicator = tabIndicator;
+    }
+
+    public void setTabIndicatorPosition(TabIndicatorPosition tabIndicatorPosition) {
+        this.tabIndicatorPosition = tabIndicatorPosition;
+    }
+
+    public void setDrawSeparator(boolean drawSeparator) {
+        isDrawSeparator = drawSeparator;
+    }
+
+    public void setTitleBlend(boolean titleBlend) {
+        isTitleBlend = titleBlend;
+    }
+
     /**
      * Init tab tabLine
      */
     public void setTabLine(boolean tabLine) {
         this.tabLine = tabLine;
     }
+
     /**
      * Init tab tabLine position
      * {@link TabLinePosition}
@@ -181,12 +214,20 @@ public class RainbowTabLayout extends HorizontalScrollView {
         this.typeFace = typeFace;
     }
 
+    public void setTitleUnselectedColors(int... colors) {
+        mTabStrip.setBackgroundTabColors(colors);
+    }
+
+    public void setBackgroundTabColors(int... colors) {
+        mTabStrip.setBackgroundTabColors(colors);
+    }
+
     /**
      * Sets the colors to be used for indicating the selected tab. These colors are treated as a
      * circular array. Providing one color will mean that all tabs are indicated with the same color.
      */
-    public void setSelectedIndicatorColors(int... colors) {
-        mTabStrip.setSelectedIndicatorColors(colors);
+    public void setIndicatorTabColors(int... colors) {
+        mTabStrip.setIndicatorTabColors(colors);
     }
 
     /**
@@ -241,14 +282,12 @@ public class RainbowTabLayout extends HorizontalScrollView {
         textView.setTypeface(typeFace);
         textView.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            // If we're running on Honeycomb or newer, then we can use the Theme's
-            // selectableItemBackground to ensure that the View has a pressed state
-            TypedValue outValue = new TypedValue();
-            getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
-                    outValue, true);
-            textView.setBackgroundResource(outValue.resourceId);
-        }
+        // If we're running on Honeycomb or newer, then we can use the Theme's
+        // selectableItemBackground to ensure that the View has a pressed state
+        TypedValue outValue = new TypedValue();
+        getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
+                outValue, true);
+        textView.setBackgroundResource(outValue.resourceId);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             // If we're running on ICS or newer, enable all-caps to match the Action Bar tab style
@@ -316,12 +355,15 @@ public class RainbowTabLayout extends HorizontalScrollView {
                 listOfView.add(tabView);
             }
 
-            if (selectedIndicatorColors != null) {
-                setSelectedIndicatorColors(selectedIndicatorColors);
-            }
+            /*if (selectedIndicatorColors != null) {
+                setIndicatorTabColors(selectedIndicatorColors);
+            }*/
 
-            mTabStrip.setIndicator(tabLine, tabLinePosition);
-            mTabStrip.setTitleColor(titleColor);
+            mTabStrip.setTitleBlend(isTitleBlend);
+            mTabStrip.setDrawSeparator(isDrawSeparator);
+            mTabStrip.setTabLine(tabLine, tabLinePosition);
+            mTabStrip.setTabIndicator(tabIndicator, tabIndicatorPosition);
+            mTabStrip.setTitleColor(titleSelectedColor);
         }
     }
 

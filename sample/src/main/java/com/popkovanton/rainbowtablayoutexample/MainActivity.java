@@ -39,9 +39,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void initTabs() {
         RainbowTabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setColorForTabs(getColorsForTabs());
-        tabLayout.setTitleColor(Color.WHITE);
-        tabLayout.setTabLine(true);
+        tabLayout.setIndicatorTabColors(Color.WHITE);
+        tabLayout.setTitleSelectedColor(Color.WHITE);
+        tabLayout.setBackgroundTabColors(getColorsForTabs());
+        tabLayout.setTabLine(false);
+        tabLayout.setTabIndicator(true);
         tabLayout.setTabLinePosition(TabLinePosition.TOP);
         tabLayout.setDistributeEvenly(false);
         tabLayout.setTabMinByMax(false);

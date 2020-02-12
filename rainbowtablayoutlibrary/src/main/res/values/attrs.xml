@@ -6,6 +6,14 @@
             <enum name="TOP" value="0"/>
             <enum name="BOTTOM" value="1"/>
         </attr>
+        <attr name="rtl_tabIndicator" format="boolean" />
+        <attr name="rtl_tabIndicatorPosition" format="enum">
+            <enum name="TOP" value="0"/>
+            <enum name="BOTTOM" value="1"/>
+            <enum name="ALL" value="1"/>
+        </attr>
+        <attr name="rtl_tabSeparator" format="boolean" />
+        <attr name="rtl_titleBlend" format="boolean" />
         <attr name="rtl_tabMinWidthByMax" format="boolean" />
         <attr name="rtl_distributeEvenly" format="boolean" />
         <attr name="rtl_fontFamily" format="reference" />

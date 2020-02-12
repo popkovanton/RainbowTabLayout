@@ -21,17 +21,24 @@ public class RainbowTabStrip extends LinearLayout {
     private static final int SELECTED_INDICATOR_THICKNESS_DIPS = 8;
     private static final int DEFAULT_SELECTED_INDICATOR_COLOR = 0xFF33B5E5;
     private static final int DEFAULT_SEPARATOR_COLOR = 0xFF000000;
+    private static final int DEFAULT_BACKGROUND_COLOR = Color.WHITE;
+    private static final int DEFAULT_TITLE_UNSELECTED_COLOR = Color.BLACK;
 
     private static final int DEFAULT_SEPARATOR_THICKNESS_DIPS = 1;
     private static final float DEFAULT_SEPARATOR_HEIGHT = 0.5f;
 
-    private boolean tabLine;
+    private boolean isDrawLine;
+    private boolean isDrawIndicator;
+    private boolean isDrawSeparator;
+    private boolean isTitleBlend;
 
+    private TabIndicatorPosition mTabIndicatorPosition;
     private TabLinePosition mTabLinePosition;
     private final int mTabLineThickness;
     private final Paint mTabLinePaint;
 
     private final int mSelectedIndicatorThickness;
+    private final Paint mTabBackgroundPaint;
     private final Paint mSelectedIndicatorPaint;
 
     private final int mDefaultTabLineColor;
@@ -66,6 +73,8 @@ public class RainbowTabStrip extends LinearLayout {
                 DEFAULT_TAB_LINE_COLOR_ALPHA);
 
         mDefaultTabColorizer = new DefaultTabColorizer();
+        mDefaultTabColorizer.setTitleUnselectedColors(DEFAULT_BACKGROUND_COLOR);
+        mDefaultTabColorizer.setBackgroundColors(DEFAULT_BACKGROUND_COLOR);
         mDefaultTabColorizer.setIndicatorColors(DEFAULT_SELECTED_INDICATOR_COLOR);
         mDefaultTabColorizer.setSeparatorColors(DEFAULT_SEPARATOR_COLOR);
 
@@ -75,6 +84,8 @@ public class RainbowTabStrip extends LinearLayout {
 
         mSelectedIndicatorThickness = (int) (SELECTED_INDICATOR_THICKNESS_DIPS * density);
         mSelectedIndicatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+        mTabBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         mSeparatorHeight = DEFAULT_SEPARATOR_HEIGHT;
         mSeparatorPaint = new Paint();
@@ -93,16 +104,43 @@ public class RainbowTabStrip extends LinearLayout {
         invalidate();
     }
 
-    void setSelectedIndicatorColors(int... colors) {
+    void setIndicatorTabColors(int... colors) {
         // Make sure that the custom colorizer is removed
         mCustomTabColorizer = null;
         mDefaultTabColorizer.setIndicatorColors(colors);
         invalidate();
     }
 
-    public void setIndicator(boolean indicator, TabLinePosition mTabLinePosition) {
-        this.tabLine = indicator;
+    void setBackgroundTabColors(int... colors) {
+        // Make sure that the custom colorizer is removed
+        mCustomTabColorizer = null;
+        mDefaultTabColorizer.setBackgroundColors(colors);
+        invalidate();
+    }
+
+    void setTitleUnselectedColors(int... colors) {
+        // Make sure that the custom colorizer is removed
+        mCustomTabColorizer = null;
+        mDefaultTabColorizer.setTitleUnselectedColors(colors);
+        invalidate();
+    }
+
+    public void setTitleBlend(boolean titleBlend) {
+        isTitleBlend = titleBlend;
+    }
+
+    public void setDrawSeparator(boolean drawSeparator) {
+        isDrawSeparator = drawSeparator;
+    }
+
+    public void setTabLine(boolean isDrawLine, TabLinePosition mTabLinePosition) {
+        this.isDrawLine = isDrawLine;
         this.mTabLinePosition = mTabLinePosition;
+    }
+
+    public void setTabIndicator(boolean isDrawIndicator, TabIndicatorPosition mTabIndicatorPosition) {
+        this.isDrawIndicator = isDrawIndicator;
+        this.mTabIndicatorPosition = mTabIndicatorPosition;
     }
 
     public void setTitleColor(int titleColor) {
@@ -125,6 +163,22 @@ public class RainbowTabStrip extends LinearLayout {
         final int childCount = getChildCount();
         final ITabColorizer tabColorizer = getTabColorizer();
         TextView textView = null;
+
+        for (int i = 0; i < getChildCount(); i++) {
+            int color = tabColorizer.getIndicatorColor(i);
+            int colorBack = tabColorizer.getBackgroundColor(i);
+            View selectedTitle = getChildAt(i);
+            int left = selectedTitle.getLeft();
+            int right = selectedTitle.getRight();
+            mTabLinePaint.setColor(color);
+
+            drawBackground(canvas, left, right, height, colorBack);
+
+            if (isDrawLine) {
+                drawTabLine(canvas, left, right, height, mTabLineThickness, mTabLinePaint);
+            }
+        }
+
         // Thick colored underline below the current selection
         if (childCount > 0) {
             View selectedTitle = getChildAt(mSelectedPosition);
@@ -153,38 +207,35 @@ public class RainbowTabStrip extends LinearLayout {
                 int previousColor = tabColorizer.getIndicatorColor(mSelectedPosition);
                 titlePreviousColor = blendColors(previousColor, titleColor, mSelectionOffset);
             }
-            drawIndicator(canvas, left, right, height, color);
-
-            if (mSelectedPosition < (getChildCount() - 1)) {
-                textView = (TextView) getChildAt(mSelectedPosition + 1);
-                textView.setTextColor(titleNextColor);
-
+            if (isDrawIndicator) {
+                drawIndicator(canvas, left, right, height, color);
             }
-            textView = (TextView) getChildAt(mSelectedPosition);
-            textView.setTextColor(titlePreviousColor);
+            if (isTitleBlend) {
+                if (mSelectedPosition < (getChildCount() - 1)) {
+                    textView = (TextView) getChildAt(mSelectedPosition + 1);
+                    textView.setTextColor(titleNextColor);
+
+                }
+                textView = (TextView) getChildAt(mSelectedPosition);
+                textView.setTextColor(titlePreviousColor);
+            }
         }
 
         for (int i = 0; i < getChildCount(); i++) {
             int color = tabColorizer.getIndicatorColor(i);
-            View selectedTitle = getChildAt(i);
-            int left = selectedTitle.getLeft();
-            int right = selectedTitle.getRight();
-            mTabLinePaint.setColor(color);
-
-            if (tabLine) {
-                drawTabLine(canvas, left, right, height, mTabLineThickness, mTabLinePaint);
-            }
             if (mSelectionOffset <= 0f) {
                 textView = (TextView) getChildAt(i);
                 if (mSelectedPosition == i) {
                     textView.setTextColor(titleColor);
                 } else {
-                    textView.setTextColor(color);
+                    textView.setTextColor(isTitleBlend ? color : titleColor);
                 }
             }
         }
         // Vertical separators between the titles
-        drawSeparator(canvas, height, childCount);
+        if (isDrawSeparator) {
+            drawSeparator(canvas, height, childCount);
+        }
     }
 
     private void drawSeparator(Canvas canvas, int height, int childCount) {
@@ -230,8 +281,22 @@ public class RainbowTabStrip extends LinearLayout {
                 .setLeft(left)
                 .setRight(right)
                 .setBottom(height)
+                .setIndicatorHeight(mTabLineThickness)
+                .setPosition(mTabIndicatorPosition)
                 .create();
         canvas.drawPath(path, mSelectedIndicatorPaint);
+    }
+
+    private void drawBackground(Canvas canvas, int left, int right, int height,
+                                int color) {
+        mTabBackgroundPaint.setColor(color);
+        Path path = new TabRect.Builder()
+                .setLeft(left)
+                .setRight(right)
+                .setBottom(height)
+                .create();
+        canvas.drawPath(path, mTabBackgroundPaint);
+
     }
 
     private ITabColorizer getTabColorizer() {

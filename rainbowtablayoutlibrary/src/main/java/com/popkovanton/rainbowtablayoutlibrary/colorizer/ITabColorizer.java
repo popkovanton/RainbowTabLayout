@@ -5,6 +5,10 @@ package com.popkovanton.rainbowtablayoutlibrary.colorizer;
  * {@link #setCustomTabColorizer(ITabColorizer)}.
  */
 public interface ITabColorizer {
+
+    int getTitleUnselectedColor(int position);
+
+    int getBackgroundColor(int position);
     /**
      * @return return the color of the tabLine used when {@code position} is selected.
      */

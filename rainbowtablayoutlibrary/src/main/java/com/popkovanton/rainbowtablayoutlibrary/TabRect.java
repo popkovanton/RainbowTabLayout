@@ -7,6 +7,21 @@ class TabRect {
     private TabRect() {
     }
 
+    private Path rect(float left, float top, float right, float bottom){
+        Path path = new Path();
+        float width = right - left;
+        float height = bottom - top;
+
+        path.moveTo(right, top);
+        path.rLineTo(-width, 0);
+        path.rLineTo(0, height);
+        path.rLineTo(width, 0);
+        path.rLineTo(0, -height);
+        path.close();//Given close, last lineto can be removed.
+
+        return path;
+    }
+
     private Path roundedRect(
             float left, float top, float right, float bottom, float cornerRadius,
             boolean tlCorner, boolean trCorner, boolean brCorner, boolean blCorner
@@ -63,10 +78,12 @@ class TabRect {
      * @return build TabRect instance
      */
     public static class Builder {
+        private TabIndicatorPosition position;
         private float left;
         private float top = 0;
         private float right;
         private float bottom;
+        private float indicatorHeight;
         private float cornerRadius = 0;
         private boolean tlCorner = true;
         private boolean trCorner = true;
@@ -90,6 +107,16 @@ class TabRect {
 
         public Builder setBottom(float bottom) {
             this.bottom = bottom;
+            return this;
+        }
+
+        public Builder setPosition(TabIndicatorPosition position) {
+            this.position = position;
+            return this;
+        }
+
+        public Builder setIndicatorHeight(float indicatorHeight) {
+            this.indicatorHeight = indicatorHeight;
             return this;
         }
 
@@ -119,8 +146,21 @@ class TabRect {
         }
 
         public Path create() {
-            return new TabRect().roundedRect(left, top, right,
-                    bottom, cornerRadius, tlCorner, trCorner, brCorner, blCorner);
+            if(position != null) {
+                switch (position) {
+                    case TOP:
+                        return new TabRect().rect(left, top, right, indicatorHeight);
+                    case BOTTOM:
+                        return new TabRect().rect(left, bottom - indicatorHeight, right, bottom);
+                    case ALL:
+                        return new TabRect().roundedRect(left, top, right,
+                                bottom, cornerRadius, tlCorner, trCorner, brCorner, blCorner);
+                }
+            } else {
+                return new TabRect().roundedRect(left, top, right,
+                        bottom, cornerRadius, tlCorner, trCorner, brCorner, blCorner);
+            }
+            return null;
         }
     }
 }
