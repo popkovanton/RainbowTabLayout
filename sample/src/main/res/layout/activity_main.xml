@@ -3,25 +3,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
     <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:rtl_tabLine="true"
-        app:rtl_tabLinePosition="TOP"
-        app:rtl_titleColor="@color/white"
-        app:rtl_tabMinWidthByMax="false"
-        app:rtl_distributeEvenly="false"
-        app:rtl_fontFamily="@font/roboto_regular"
-        app:rtl_tabViewPadding="8"
-        app:rtl_tabViewTextSize="18"/>
+        android:layout_marginBottom="5dp" />
+
+    <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
+        android:id="@+id/tabs2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@+id/tabs" />
+
+    <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
+        android:id="@+id/tabs3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@+id/tabs2" />
+
+    <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
+        android:id="@+id/tabs4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_below="@+id/tabs3" />
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewpager"
-        android:layout_below="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tabs4" />
 </RelativeLayout>

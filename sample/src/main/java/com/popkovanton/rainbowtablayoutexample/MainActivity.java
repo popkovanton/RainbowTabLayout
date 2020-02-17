@@ -1,21 +1,16 @@
 package com.popkovanton.rainbowtablayoutexample;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.popkovanton.rainbowtablayoutlibrary.TabLinePosition;
 import com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import static com.popkovanton.rainbowtablayoutlibrary.TabIndicatorPosition.ALL;
 
 public class MainActivity extends AppCompatActivity {
     private final static int TABS_COUNT = 7;
@@ -28,32 +23,57 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         initViewPager();
-        initTabs();
-        test();
+        initTabs1();
+        initTabs2();
+        initTabs3();
+        initTabs4();
     }
+
 
     private void initViewPager() {
         RainbowPagerAdapter pagerAdapter = new RainbowPagerAdapter(getSupportFragmentManager(), TABS_COUNT);
         viewPager.setAdapter(pagerAdapter);
     }
 
-    private void initTabs() {
+    private void initTabs1() {
         RainbowTabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setIndicatorTabColors(Color.WHITE);
-        tabLayout.setTitleSelectedColor(Color.WHITE);
-        tabLayout.setBackgroundTabColors(getColorsForTabs());
-        tabLayout.setTabLine(false);
-        tabLayout.setTabIndicator(true);
-        tabLayout.setTabLinePosition(TabLinePosition.TOP);
-        tabLayout.setDistributeEvenly(false);
-        tabLayout.setTabMinByMax(false);
-        tabLayout.setTabViewPadding(8);
-        tabLayout.setTabViewTextSize(17);
-        tabLayout.setTypeFace(ResourcesCompat.getFont(this, R.font.roboto_regular));
+        tabLayout.setBackgroundTabColors(Color.LTGRAY);
+        tabLayout.setDrawSeparator(true);
         tabLayout.setViewPager(viewPager);
     }
 
-    private int[] getColorsForTabs() {
+    private void initTabs2() {
+        RainbowTabLayout tabLayout = findViewById(R.id.tabs2);
+        tabLayout.setBackgroundTabColors(Color.LTGRAY);
+        tabLayout.setIndicatorColors(getColors());
+        tabLayout.setTabIndicator(true);
+        tabLayout.setTextColorBlend(true);
+        tabLayout.setViewPager(viewPager);
+    }
+
+    private void initTabs3() {
+        RainbowTabLayout tabLayout = findViewById(R.id.tabs3);
+        tabLayout.setBackgroundTabColors(Color.LTGRAY);
+        tabLayout.setIndicatorColors(getColors());
+        tabLayout.setTabIndicatorPosition(ALL);
+        tabLayout.setTabIndicator(true);
+        tabLayout.setTextColorBlend(true);
+        tabLayout.setViewPager(viewPager);
+    }
+
+    private void initTabs4() {
+        RainbowTabLayout tabLayout = findViewById(R.id.tabs4);
+        tabLayout.setTextSelectedColor(Color.WHITE);
+        tabLayout.setBackgroundTabColors(Color.LTGRAY);
+        tabLayout.setIndicatorColors(getColors());
+        tabLayout.setTabIndicatorPosition(ALL);
+        tabLayout.setTabIndicator(true);
+        tabLayout.setTabLine(true);
+        tabLayout.setTextColorBlend(true);
+        tabLayout.setViewPager(viewPager);
+    }
+
+    private int[] getColors() {
         int[] colors = new int[TABS_COUNT];
         colors[0] = getResources().getColor(R.color.red);
         colors[1] = getResources().getColor(R.color.orange);
@@ -63,30 +83,5 @@ public class MainActivity extends AppCompatActivity {
         colors[5] = getResources().getColor(R.color.indigo);
         colors[6] = getResources().getColor(R.color.violet);
         return colors;
-    }
-
-    private void test() {
-        List<Integer> number = new ArrayList<>();
-
-        number.add(11);
-        number.add(45);
-        number.add(12);
-        number.add(32);
-        number.add(36);
-        boolean even = false;
-        for (Iterator i = number.iterator(); i.hasNext(); even = !even) {
-            i.next();
-            if (even) {
-                i.remove();
-            }
-        }
-
-        for(int num: number){
-            Log.i("test_method", "number int list - " + num);
-        }
-    }
-
-    private boolean isEven(int next) {
-        return next % 2 == 0;
     }
 }

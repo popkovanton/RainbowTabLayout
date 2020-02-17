@@ -2,7 +2,6 @@ package com.popkovanton.rainbowtablayoutlibrary.colorizer;
 
 /**
  * Allows complete control over the colors drawn in the tab layout. Set with
- * {@link #setCustomTabColorizer(ITabColorizer)}.
  */
 public interface ITabColorizer {
 

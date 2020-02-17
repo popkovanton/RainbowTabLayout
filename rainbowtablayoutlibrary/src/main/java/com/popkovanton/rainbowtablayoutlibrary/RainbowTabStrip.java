@@ -18,7 +18,7 @@ public class RainbowTabStrip extends LinearLayout {
 
     private static final int DEFAULT_TAB_LINE_THICKNESS_DIPS = 4;
     private static final byte DEFAULT_TAB_LINE_COLOR_ALPHA = 0x26;
-    private static final int SELECTED_INDICATOR_THICKNESS_DIPS = 8;
+    private static final int SELECTED_INDICATOR_THICKNESS_DIPS = 4;
     private static final int DEFAULT_SELECTED_INDICATOR_COLOR = 0xFF33B5E5;
     private static final int DEFAULT_SEPARATOR_COLOR = 0xFF000000;
     private static final int DEFAULT_BACKGROUND_COLOR = Color.WHITE;
@@ -49,7 +49,7 @@ public class RainbowTabStrip extends LinearLayout {
     private int mSelectedPosition;
     private float mSelectionOffset;
 
-    private int titleColor;
+    private int textSelectedColor;
 
     private ITabColorizer mCustomTabColorizer;
     private final DefaultTabColorizer mDefaultTabColorizer;
@@ -73,7 +73,7 @@ public class RainbowTabStrip extends LinearLayout {
                 DEFAULT_TAB_LINE_COLOR_ALPHA);
 
         mDefaultTabColorizer = new DefaultTabColorizer();
-        mDefaultTabColorizer.setTitleUnselectedColors(DEFAULT_BACKGROUND_COLOR);
+        mDefaultTabColorizer.setTitleUnselectedColors(DEFAULT_TITLE_UNSELECTED_COLOR);
         mDefaultTabColorizer.setBackgroundColors(DEFAULT_BACKGROUND_COLOR);
         mDefaultTabColorizer.setIndicatorColors(DEFAULT_SELECTED_INDICATOR_COLOR);
         mDefaultTabColorizer.setSeparatorColors(DEFAULT_SEPARATOR_COLOR);
@@ -98,28 +98,24 @@ public class RainbowTabStrip extends LinearLayout {
     }
 
     void setSeparatorColors(int... colors) {
-        // Make sure that the custom colorizer is removed
         mCustomTabColorizer = null;
         mDefaultTabColorizer.setSeparatorColors(colors);
         invalidate();
     }
 
-    void setIndicatorTabColors(int... colors) {
-        // Make sure that the custom colorizer is removed
+    void setIndicatorColors(int... colors) {
         mCustomTabColorizer = null;
         mDefaultTabColorizer.setIndicatorColors(colors);
         invalidate();
     }
 
     void setBackgroundTabColors(int... colors) {
-        // Make sure that the custom colorizer is removed
         mCustomTabColorizer = null;
         mDefaultTabColorizer.setBackgroundColors(colors);
         invalidate();
     }
 
-    void setTitleUnselectedColors(int... colors) {
-        // Make sure that the custom colorizer is removed
+    void setTextUnselectedColors(int... colors) {
         mCustomTabColorizer = null;
         mDefaultTabColorizer.setTitleUnselectedColors(colors);
         invalidate();
@@ -143,8 +139,8 @@ public class RainbowTabStrip extends LinearLayout {
         this.mTabIndicatorPosition = mTabIndicatorPosition;
     }
 
-    public void setTitleColor(int titleColor) {
-        this.titleColor = titleColor;
+    public void setTextSelectedColor(int textSelectedColor) {
+        this.textSelectedColor = textSelectedColor;
     }
 
     void onViewPagerPageChanged(int position, float positionOffset) {
@@ -162,7 +158,7 @@ public class RainbowTabStrip extends LinearLayout {
         final int height = getHeight();
         final int childCount = getChildCount();
         final ITabColorizer tabColorizer = getTabColorizer();
-        TextView textView = null;
+        TextView textView;
 
         for (int i = 0; i < getChildCount(); i++) {
             int color = tabColorizer.getIndicatorColor(i);
@@ -179,18 +175,17 @@ public class RainbowTabStrip extends LinearLayout {
             }
         }
 
-        // Thick colored underline below the current selection
         if (childCount > 0) {
             View selectedTitle = getChildAt(mSelectedPosition);
             int left = selectedTitle.getLeft();
             int right = selectedTitle.getRight();
             int color = tabColorizer.getIndicatorColor(mSelectedPosition);
-            int titleNextColor = titleColor;
-            int titlePreviousColor = titleColor;
+            int titleNextColor = textSelectedColor;
+            int titlePreviousColor = textSelectedColor;
             if (mSelectionOffset > 0f && mSelectedPosition < (getChildCount() - 1)) {
                 int nextColor = tabColorizer.getIndicatorColor(mSelectedPosition + 1);
 
-                titleNextColor = blendColors(titleColor, nextColor, mSelectionOffset);
+                titleNextColor = blendColors(textSelectedColor, nextColor, mSelectionOffset);
 
                 if (color != nextColor) {
                     color = blendColors(nextColor, color, mSelectionOffset);
@@ -205,7 +200,7 @@ public class RainbowTabStrip extends LinearLayout {
 
             if (mSelectionOffset > 0f) {
                 int previousColor = tabColorizer.getIndicatorColor(mSelectedPosition);
-                titlePreviousColor = blendColors(previousColor, titleColor, mSelectionOffset);
+                titlePreviousColor = blendColors(previousColor, textSelectedColor, mSelectionOffset);
             }
             if (isDrawIndicator) {
                 drawIndicator(canvas, left, right, height, color);
@@ -226,9 +221,9 @@ public class RainbowTabStrip extends LinearLayout {
             if (mSelectionOffset <= 0f) {
                 textView = (TextView) getChildAt(i);
                 if (mSelectedPosition == i) {
-                    textView.setTextColor(titleColor);
+                    textView.setTextColor(textSelectedColor);
                 } else {
-                    textView.setTextColor(isTitleBlend ? color : titleColor);
+                    textView.setTextColor(isTitleBlend ? color : textSelectedColor);
                 }
             }
         }
@@ -239,10 +234,6 @@ public class RainbowTabStrip extends LinearLayout {
     }
 
     private void drawSeparator(Canvas canvas, int height, int childCount) {
-        /*if (dividerThickness <= 0) {
-            return;
-        }*/
-
         final int dividerHeightPx = (int) (Math.min(Math.max(0f, mSeparatorHeight), 1f) * height);
         final ITabColorizer tabColorizer = getTabColorizer();
 
@@ -281,7 +272,7 @@ public class RainbowTabStrip extends LinearLayout {
                 .setLeft(left)
                 .setRight(right)
                 .setBottom(height)
-                .setIndicatorHeight(mTabLineThickness)
+                .setIndicatorHeight(mSelectedIndicatorThickness)
                 .setPosition(mTabIndicatorPosition)
                 .create();
         canvas.drawPath(path, mSelectedIndicatorPaint);

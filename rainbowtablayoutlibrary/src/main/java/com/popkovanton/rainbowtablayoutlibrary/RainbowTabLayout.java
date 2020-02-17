@@ -27,52 +27,31 @@ import java.util.ArrayList;
 
 public class RainbowTabLayout extends HorizontalScrollView {
 
-    /**
-     * Allows complete control over the colors drawn in the tab layout. Set with
-     * {@link #setCustomTabColorizer(ITabColorizer)}.
-     */
-    public interface TabColorizer {
-
-        /**
-         * @return return the color of the tabLine used when {@code position} is selected.
-         */
-        int getIndicatorColor(int position);
-
-        /**
-         * @return return the color of the separator drawn to the right of {@code position}.
-         */
-        int getSeparatorColor(int position);
-
-    }
-
     private static final int TITLE_OFFSET_DIPS = 24;
 
     private int mTitleOffset;
 
     private int mTabViewLayoutId;
     private int mTabViewTextViewId;
-    private int[] selectedIndicatorColors = null;
-    private int[] backgroundColors = null;
-    private int[] titleUnselectedColors = null;
 
     private ViewPager mViewPager;
     private ViewPager.OnPageChangeListener mViewPagerPageChangeListener;
 
-    private final RainbowTabStrip mTabStrip;
+    private RainbowTabStrip mTabStrip;
 
     private boolean distributeEvenly;
     private boolean tabMinWidthByMax;
     private boolean tabIndicator;
     private boolean tabLine;
     private boolean isDrawSeparator;
-    private boolean isTitleBlend;
+    private boolean isTextColorBlend;
     private TabIndicatorPosition tabIndicatorPosition;
     private TabLinePosition tabLinePosition;
-    private int tabViewPadding;
-    private int tabViewTextSize;
+    private float tabViewPadding;
+    private float tabViewTextSize;
     private Typeface typeFace;
-    private int titleSelectedColor;
-    private ArrayList<Integer> listOfViewSize;
+    private int textSelectedColor;
+    private ArrayList<Float> listOfViewSize;
     private ArrayList<View> listOfView;
 
     public RainbowTabLayout(Context context) {
@@ -80,11 +59,16 @@ public class RainbowTabLayout extends HorizontalScrollView {
     }
 
     public RainbowTabLayout(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        super(context, attrs);
+        init(context, attrs);
     }
 
     public RainbowTabLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        init(context, attrs);
+    }
+
+    private void init(Context context, AttributeSet attrs){
         TypedArray a = context.getTheme()
                 .obtainStyledAttributes(attrs, R.styleable.RainbowTabLayout, 0, 0);
         try {
@@ -92,13 +76,13 @@ public class RainbowTabLayout extends HorizontalScrollView {
             tabMinWidthByMax = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabMinWidthByMax, false);
             tabIndicator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabIndicator, true);
             tabIndicatorPosition = TabIndicatorPosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabIndicatorPosition, 1)];
-            isTitleBlend = a.getBoolean(R.styleable.RainbowTabLayout_rtl_titleBlend, false);
+            isTextColorBlend = a.getBoolean(R.styleable.RainbowTabLayout_rtl_titleBlend, false);
             isDrawSeparator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabSeparator, false);
             tabLine = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabLine, false);
             tabLinePosition = TabLinePosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabLinePosition, 0)];
-            tabViewPadding = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewPadding, 8);
-            tabViewTextSize = a.getInt(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, 17);
-            titleSelectedColor = a.getColor(R.styleable.RainbowTabLayout_rtl_titleColor, Color.BLACK);
+            tabViewPadding = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewPadding, dp2px(4));
+            tabViewTextSize = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, sp2px(8));
+            textSelectedColor = a.getColor(R.styleable.RainbowTabLayout_rtl_titleColor, Color.BLACK);
             if (a.hasValue(R.styleable.RainbowTabLayout_rtl_fontFamily)) {
                 int fontId = a.getResourceId(R.styleable.RainbowTabLayout_rtl_fontFamily, -1);
                 typeFace = ResourcesCompat.getFont(context, fontId);
@@ -121,30 +105,18 @@ public class RainbowTabLayout extends HorizontalScrollView {
         addView(mTabStrip, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
-   /* public void setIndicatorColors(int... selectedIndicatorColor) {
-        this.selectedIndicatorColors = selectedIndicatorColor;
-    }
-
-    public void setBackgroundColors(int... backgroundColors) {
-        this.backgroundColors = backgroundColors;
-    }*/
-
     /**
-     * Set the custom {@link TabColorizer} to be used.
-     * <p>
-     * If you only require simple custmisation then you can use
-     * {@link #setIndicatorTabColors(int...)} to achieve
-     * similar effects.
+     * Set the custom {@link ITabColorizer} to be used.
+     *
+     * If you only require simple customisation then you can use
+     * {@link #setIndicatorColors(int...)}
+     * {@link #setBackgroundTabColors(int...)}
+     * {@link #setSeparatorColors(int...)}
+     * {@link #setTextUnselectedColors(int...)}
+     * to achieve similar effects.
      */
     public void setCustomTabColorizer(ITabColorizer tabColorizer) {
         mTabStrip.setCustomTabColorizer(tabColorizer);
-    }
-
-    /**
-     * Set the color of title text
-     */
-    public void setTitleSelectedColor(int titleSelectedColor) {
-        this.titleSelectedColor = titleSelectedColor;
     }
 
     /**
@@ -162,31 +134,44 @@ public class RainbowTabLayout extends HorizontalScrollView {
     }
 
 
+    /**
+     * Init tab indicator
+     */
     public void setTabIndicator(boolean tabIndicator) {
         this.tabIndicator = tabIndicator;
     }
 
+    /**
+     * Setting indicator position for tabs
+     * {@link TabIndicatorPosition}
+     */
     public void setTabIndicatorPosition(TabIndicatorPosition tabIndicatorPosition) {
         this.tabIndicatorPosition = tabIndicatorPosition;
     }
 
+    /**
+     * Init drawing separator line between tabs
+     */
     public void setDrawSeparator(boolean drawSeparator) {
         isDrawSeparator = drawSeparator;
     }
 
-    public void setTitleBlend(boolean titleBlend) {
-        isTitleBlend = titleBlend;
+    /**
+     * Init blend next and previous text color
+     */
+    public void setTextColorBlend(boolean isTextColorBlend) {
+        this.isTextColorBlend = isTextColorBlend;
     }
 
     /**
-     * Init tab tabLine
+     * Init static line
      */
     public void setTabLine(boolean tabLine) {
         this.tabLine = tabLine;
     }
 
     /**
-     * Init tab tabLine position
+     * Setting tabLine position
      * {@link TabLinePosition}
      */
     public void setTabLinePosition(TabLinePosition tabLinePosition) {
@@ -214,10 +199,33 @@ public class RainbowTabLayout extends HorizontalScrollView {
         this.typeFace = typeFace;
     }
 
-    public void setTitleUnselectedColors(int... colors) {
-        mTabStrip.setBackgroundTabColors(colors);
+    /**
+     * Set the color of title text
+     */
+    public void setTextSelectedColor(int textSelectedColor) {
+        this.textSelectedColor = textSelectedColor;
     }
 
+    /**
+     * Set the color to be used for unselected tabs title text
+     * Providing one color will mean that all title text are colored with the same color.
+     */
+    public void setTextUnselectedColors(int... colors) {
+        mTabStrip.setTextUnselectedColors(colors);
+    }
+
+    /**
+     * Set the color to be used for separator between tabs
+     * Providing one color will mean that all separators are colored with the same color.
+     */
+    public void setSeparatorColors(int... colors) {
+        mTabStrip.setSeparatorColors(colors);
+    }
+
+    /**
+     * Sets the colors to be used for background of the tabs.
+     * Providing one color will mean that all tabs are colored with the same color.
+     */
     public void setBackgroundTabColors(int... colors) {
         mTabStrip.setBackgroundTabColors(colors);
     }
@@ -226,8 +234,8 @@ public class RainbowTabLayout extends HorizontalScrollView {
      * Sets the colors to be used for indicating the selected tab. These colors are treated as a
      * circular array. Providing one color will mean that all tabs are indicated with the same color.
      */
-    public void setIndicatorTabColors(int... colors) {
-        mTabStrip.setIndicatorTabColors(colors);
+    public void setIndicatorColors(int... colors) {
+        mTabStrip.setIndicatorColors(colors);
     }
 
     /**
@@ -278,12 +286,12 @@ public class RainbowTabLayout extends HorizontalScrollView {
         TextView textView = new TextView(getContext());
         textView.setGravity(Gravity.CENTER);
         textView.setText(title);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, tabViewTextSize);
+        textView.setTextSize(tabViewTextSize);
+        textView.setTextSize(tabViewTextSize);
         textView.setTypeface(typeFace);
         textView.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
-        // If we're running on Honeycomb or newer, then we can use the Theme's
-        // selectableItemBackground to ensure that the View has a pressed state
+
         TypedValue outValue = new TypedValue();
         getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                 outValue, true);
@@ -301,18 +309,18 @@ public class RainbowTabLayout extends HorizontalScrollView {
         return textView;
     }
 
-    private int getTextWidth(TextView textView, String text) {
+    private float getTextWidth(TextView textView, String text) {
         Rect bounds = new Rect();
         Paint textPaint = textView.getPaint();
         textPaint.getTextBounds(text, 0, text.length(), bounds);
-        int df = tabViewPadding * 2;
+        float df = tabViewPadding * 2.0f;
         return bounds.width() + df;
     }
 
     private void setMinTabLikeMax() {
-        int max = 0;
+        float max = 0f;
         if (listOfViewSize.size() > 0) {
-            for (int number : listOfViewSize) {
+            for (float number : listOfViewSize) {
                 if (number > max) {
                     max = number;
                 }
@@ -320,7 +328,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
         }
         for (int i = 0; i < mTabStrip.getChildCount(); i++) {
             View view = listOfView.get(i);
-            view.setMinimumWidth(max);
+            view.setMinimumWidth((int) max);
         }
         invalidate();
     }
@@ -355,15 +363,11 @@ public class RainbowTabLayout extends HorizontalScrollView {
                 listOfView.add(tabView);
             }
 
-            /*if (selectedIndicatorColors != null) {
-                setIndicatorTabColors(selectedIndicatorColors);
-            }*/
-
-            mTabStrip.setTitleBlend(isTitleBlend);
+            mTabStrip.setTitleBlend(isTextColorBlend);
             mTabStrip.setDrawSeparator(isDrawSeparator);
             mTabStrip.setTabLine(tabLine, tabLinePosition);
             mTabStrip.setTabIndicator(tabIndicator, tabIndicatorPosition);
-            mTabStrip.setTitleColor(titleSelectedColor);
+            mTabStrip.setTextSelectedColor(textSelectedColor);
         }
     }
 
@@ -376,6 +380,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
             scrollToTab(mViewPager.getCurrentItem(), 0);
         }
     }
+
 
     private void scrollToTab(int tabIndex, int positionOffset) {
         final int tabStripChildCount = mTabStrip.getChildCount();
@@ -453,6 +458,16 @@ public class RainbowTabLayout extends HorizontalScrollView {
                 }
             }
         }
+    }
+
+    protected int dp2px(float dp) {
+        final float scale = getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
+    }
+
+    protected int sp2px(float sp) {
+        final float scale = getResources().getDisplayMetrics().scaledDensity;
+        return (int) (sp * scale + 0.5f);
     }
 
 }
