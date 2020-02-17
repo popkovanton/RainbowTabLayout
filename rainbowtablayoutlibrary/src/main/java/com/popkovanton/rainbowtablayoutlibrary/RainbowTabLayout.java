@@ -80,8 +80,8 @@ public class RainbowTabLayout extends HorizontalScrollView {
             isDrawSeparator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabSeparator, false);
             tabLine = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabLine, false);
             tabLinePosition = TabLinePosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabLinePosition, 0)];
-            tabViewPadding = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewPadding, dp2px(4));
-            tabViewTextSize = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, sp2px(8));
+            tabViewPadding = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewPadding, dp2px(20));
+            tabViewTextSize = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, sp2px(14));
             textSelectedColor = a.getColor(R.styleable.RainbowTabLayout_rtl_titleColor, Color.BLACK);
             if (a.hasValue(R.styleable.RainbowTabLayout_rtl_fontFamily)) {
                 int fontId = a.getResourceId(R.styleable.RainbowTabLayout_rtl_fontFamily, -1);
@@ -122,15 +122,15 @@ public class RainbowTabLayout extends HorizontalScrollView {
     /**
      * Set the padding of tab
      */
-    public void setTabViewPadding(int tabViewPadding) {
-        this.tabViewPadding = tabViewPadding;
+    public void setTabViewPadding(float tabViewPadding) {
+        this.tabViewPadding = dp2px(tabViewPadding);
     }
 
     /**
      * Set the size of tab title in SP
      */
-    public void setTabViewTextSize(int tabViewTextSize) {
-        this.tabViewTextSize = tabViewTextSize;
+    public void setTabViewTextSize(float tabViewTextSize) {
+        this.tabViewTextSize = sp2px(tabViewTextSize);
     }
 
 
@@ -286,8 +286,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
         TextView textView = new TextView(getContext());
         textView.setGravity(Gravity.CENTER);
         textView.setText(title);
-        textView.setTextSize(tabViewTextSize);
-        textView.setTextSize(tabViewTextSize);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, tabViewTextSize);
         textView.setTypeface(typeFace);
         textView.setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT));
@@ -302,7 +301,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
             textView.setAllCaps(false);
         }
 
-        int padding = (int) (tabViewPadding * getResources().getDisplayMetrics().density);
+        int padding = (int) tabViewPadding;
         textView.setPadding(padding, padding, padding, padding);
 
         listOfViewSize.add(getTextWidth(textView, String.valueOf(title)));
