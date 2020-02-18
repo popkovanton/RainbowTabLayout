@@ -7,23 +7,25 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.popkovanton.rainbowtablayoutlibrary.colorizer.ITabColorizer;
+import com.popkovanton.rainbowtablayoutlibrary.utils.ViewUtils;
 
+import androidx.annotation.Dimension;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
-import java.util.ArrayList;
 
 public class RainbowTabLayout extends HorizontalScrollView {
 
@@ -40,7 +42,6 @@ public class RainbowTabLayout extends HorizontalScrollView {
     private RainbowTabStrip mTabStrip;
 
     private boolean distributeEvenly;
-    private boolean tabMinWidthByMax;
     private boolean tabIndicator;
     private boolean tabLine;
     private boolean isDrawSeparator;
@@ -51,8 +52,6 @@ public class RainbowTabLayout extends HorizontalScrollView {
     private float tabViewTextSize;
     private Typeface typeFace;
     private int textSelectedColor;
-    private ArrayList<Float> listOfViewSize;
-    private ArrayList<View> listOfView;
 
     public RainbowTabLayout(Context context) {
         this(context, null);
@@ -68,20 +67,19 @@ public class RainbowTabLayout extends HorizontalScrollView {
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attrs){
+    private void init(Context context, AttributeSet attrs) {
         TypedArray a = context.getTheme()
                 .obtainStyledAttributes(attrs, R.styleable.RainbowTabLayout, 0, 0);
         try {
             distributeEvenly = a.getBoolean(R.styleable.RainbowTabLayout_rtl_distributeEvenly, false);
-            tabMinWidthByMax = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabMinWidthByMax, false);
             tabIndicator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabIndicator, true);
             tabIndicatorPosition = TabIndicatorPosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabIndicatorPosition, 1)];
             isTextColorBlend = a.getBoolean(R.styleable.RainbowTabLayout_rtl_titleBlend, false);
             isDrawSeparator = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabSeparator, false);
             tabLine = a.getBoolean(R.styleable.RainbowTabLayout_rtl_tabLine, false);
             tabLinePosition = TabLinePosition.values()[a.getInt(R.styleable.RainbowTabLayout_rtl_tabLinePosition, 0)];
-            tabViewPadding = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewPadding, dp2px(20));
-            tabViewTextSize = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, sp2px(14));
+            tabViewPadding = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewPadding, ViewUtils.dpToPx(getContext(), 20));
+            tabViewTextSize = a.getDimension(R.styleable.RainbowTabLayout_rtl_tabViewTextSize, ViewUtils.spToPx(getContext(), 14));
             textSelectedColor = a.getColor(R.styleable.RainbowTabLayout_rtl_titleColor, Color.BLACK);
             if (a.hasValue(R.styleable.RainbowTabLayout_rtl_fontFamily)) {
                 int fontId = a.getResourceId(R.styleable.RainbowTabLayout_rtl_fontFamily, -1);
@@ -90,9 +88,8 @@ public class RainbowTabLayout extends HorizontalScrollView {
         } finally {
             a.recycle();
         }
-        // Disable the Scroll Bar
+
         setHorizontalScrollBarEnabled(false);
-        // Make sure that the Tab Strips fills this View
         setFillViewport(true);
 
         final DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -102,12 +99,40 @@ public class RainbowTabLayout extends HorizontalScrollView {
 
         mTabStrip = new RainbowTabStrip(context);
 
-        addView(mTabStrip, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        addView(mTabStrip, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) { //todo create tabLayout mode
+        // If we have a MeasureSpec which allows us to decide our height, try and use the default
+        // height
+        final int idealHeight = Math.round(ViewUtils.dpToPx(getContext(), getDefaultHeight()));
+        switch (MeasureSpec.getMode(heightMeasureSpec)) {
+            case MeasureSpec.AT_MOST:
+                if (getChildCount() == 1 && MeasureSpec.getSize(heightMeasureSpec) >= idealHeight) {
+                    getChildAt(0).setMinimumHeight(idealHeight);
+                }
+                break;
+            case MeasureSpec.UNSPECIFIED:
+                heightMeasureSpec =
+                        MeasureSpec.makeMeasureSpec(
+                                idealHeight + getPaddingTop() + getPaddingBottom(), MeasureSpec.EXACTLY);
+                break;
+            default:
+                break;
+        }
+
+        // Now super measure itself using the (possibly) modified height spec
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Dimension(unit = Dimension.DP)
+    private int getDefaultHeight() {
+        return 0;
     }
 
     /**
      * Set the custom {@link ITabColorizer} to be used.
-     *
      * If you only require simple customisation then you can use
      * {@link #setIndicatorColors(int...)}
      * {@link #setBackgroundTabColors(int...)}
@@ -123,16 +148,15 @@ public class RainbowTabLayout extends HorizontalScrollView {
      * Set the padding of tab
      */
     public void setTabViewPadding(float tabViewPadding) {
-        this.tabViewPadding = dp2px(tabViewPadding);
+        this.tabViewPadding = ViewUtils.dpToPx(getContext(), tabViewPadding);
     }
 
     /**
      * Set the size of tab title in SP
      */
     public void setTabViewTextSize(float tabViewTextSize) {
-        this.tabViewTextSize = sp2px(tabViewTextSize);
+        this.tabViewTextSize = ViewUtils.spToPx(getContext(), tabViewTextSize);
     }
-
 
     /**
      * Init tab indicator
@@ -186,13 +210,6 @@ public class RainbowTabLayout extends HorizontalScrollView {
     }
 
     /**
-     * Set the min width for tab, like max tab
-     */
-    public void setTabMinByMax(boolean tabMinWidthByMax) {
-        this.tabMinWidthByMax = tabMinWidthByMax;
-    }
-
-    /**
      * Set the custom font for tabs title
      */
     public void setTypeFace(Typeface typeFace) {
@@ -204,6 +221,14 @@ public class RainbowTabLayout extends HorizontalScrollView {
      */
     public void setTextSelectedColor(int textSelectedColor) {
         this.textSelectedColor = textSelectedColor;
+    }
+
+    /**
+     * Set the color to be used for tabs line
+     * Providing one color will mean that all lines are colored with the same color.
+     */
+    public void setTabLineColors(int... colors) {
+        mTabStrip.setTabLineColors(colors);
     }
 
     /**
@@ -265,16 +290,12 @@ public class RainbowTabLayout extends HorizontalScrollView {
      * (number of tabs and tab titles) does not change after this call has been made.
      */
     public void setViewPager(ViewPager viewPager) {
-        listOfViewSize = new ArrayList<>();
         mTabStrip.removeAllViews();
 
         mViewPager = viewPager;
         if (viewPager != null && viewPager.getAdapter() != null) {
             viewPager.addOnPageChangeListener(new InternalViewPagerListener());
             populateTabStrip();
-            if (tabMinWidthByMax) {
-                setMinTabLikeMax();
-            }
         }
     }
 
@@ -302,40 +323,14 @@ public class RainbowTabLayout extends HorizontalScrollView {
         }
 
         int padding = (int) tabViewPadding;
-        textView.setPadding(padding, padding, padding, padding);
+        textView.setPadding(padding, 0, padding, 0);
 
-        listOfViewSize.add(getTextWidth(textView, String.valueOf(title)));
         return textView;
-    }
-
-    private float getTextWidth(TextView textView, String text) {
-        Rect bounds = new Rect();
-        Paint textPaint = textView.getPaint();
-        textPaint.getTextBounds(text, 0, text.length(), bounds);
-        float df = tabViewPadding * 2.0f;
-        return bounds.width() + df;
-    }
-
-    private void setMinTabLikeMax() {
-        float max = 0f;
-        if (listOfViewSize.size() > 0) {
-            for (float number : listOfViewSize) {
-                if (number > max) {
-                    max = number;
-                }
-            }
-        }
-        for (int i = 0; i < mTabStrip.getChildCount(); i++) {
-            View view = listOfView.get(i);
-            view.setMinimumWidth((int) max);
-        }
-        invalidate();
     }
 
     private void populateTabStrip() {
         final PagerAdapter adapter = mViewPager.getAdapter();
         final OnClickListener tabClickListener = new TabClickListener();
-        listOfView = new ArrayList<>();
         if (adapter != null) {
             for (int i = 0; i < adapter.getCount(); i++) {
                 View tabView = null;
@@ -359,7 +354,6 @@ public class RainbowTabLayout extends HorizontalScrollView {
                 tabView.setOnClickListener(tabClickListener);
 
                 mTabStrip.addView(tabView);
-                listOfView.add(tabView);
             }
 
             mTabStrip.setTitleBlend(isTextColorBlend);
@@ -383,7 +377,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
 
     private void scrollToTab(int tabIndex, int positionOffset) {
         final int tabStripChildCount = mTabStrip.getChildCount();
-        if (tabStripChildCount == 0 || tabIndex < 0 || tabIndex >= tabStripChildCount) {
+        if (tabIndex < 0 || tabIndex >= tabStripChildCount) {
             return;
         }
 
@@ -406,7 +400,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             int tabStripChildCount = mTabStrip.getChildCount();
-            if ((tabStripChildCount == 0) || (position < 0) || (position >= tabStripChildCount)) {
+            if ((position < 0) || (position >= tabStripChildCount)) {
                 return;
             }
 
@@ -458,15 +452,4 @@ public class RainbowTabLayout extends HorizontalScrollView {
             }
         }
     }
-
-    protected int dp2px(float dp) {
-        final float scale = getResources().getDisplayMetrics().density;
-        return (int) (dp * scale + 0.5f);
-    }
-
-    protected int sp2px(float sp) {
-        final float scale = getResources().getDisplayMetrics().scaledDensity;
-        return (int) (sp * scale + 0.5f);
-    }
-
 }

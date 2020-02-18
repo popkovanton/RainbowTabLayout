@@ -2,14 +2,20 @@ package com.popkovanton.rainbowtablayoutlibrary.colorizer;
 
 public class DefaultTabColorizer implements ITabColorizer {
 
-    private int[] mTitleUnselectedColors;
+    private int[] mTabLineColors;
+    private int[] mTextUnselectedColors;
     private int[] mBackgroundColors;
     private int[] mIndicatorColors;
     private int[] mSeparatorColors;
 
     @Override
-    public int getTitleUnselectedColor(int position) {
-        return mTitleUnselectedColors[position % mTitleUnselectedColors.length];
+    public int getTabLineColor(int position) {
+        return  mTabLineColors[position % mTabLineColors.length];
+    }
+
+    @Override
+    public int getTextUnselectedColor(int position) {
+        return mTextUnselectedColors[position % mTextUnselectedColors.length];
     }
 
     @Override
@@ -27,8 +33,8 @@ public class DefaultTabColorizer implements ITabColorizer {
         return mSeparatorColors[position % mSeparatorColors.length];
     }
 
-    public void setTitleUnselectedColors(int... colors) {
-        this.mTitleUnselectedColors = colors;
+    public void setTextUnselectedColors(int... colors) {
+        this.mTextUnselectedColors = colors;
     }
 
     public void setBackgroundColors(int... colors) {
@@ -43,4 +49,7 @@ public class DefaultTabColorizer implements ITabColorizer {
         mSeparatorColors = colors;
     }
 
+    public void setTabLineColors(int... colors) {
+        this.mTabLineColors = colors;
+    }
 }

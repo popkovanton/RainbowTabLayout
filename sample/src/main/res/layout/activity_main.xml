@@ -9,27 +9,27 @@
     <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/rtl_height"
         android:layout_marginBottom="5dp" />
 
     <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
         android:id="@+id/tabs2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/rtl_height"
         android:layout_marginBottom="5dp"
         android:layout_below="@+id/tabs" />
 
     <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
         android:id="@+id/tabs3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/rtl_height"
         android:layout_marginBottom="5dp"
         android:layout_below="@+id/tabs2" />
 
     <com.popkovanton.rainbowtablayoutlibrary.RainbowTabLayout
         android:id="@+id/tabs4"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/rtl_height"
         android:layout_marginBottom="5dp"
         android:layout_below="@+id/tabs3" />
 

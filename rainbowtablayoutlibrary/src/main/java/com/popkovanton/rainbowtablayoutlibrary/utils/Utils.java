@@ -1,4 +1,4 @@
-package com.popkovanton.rainbowtablayoutlibrary;
+package com.popkovanton.rainbowtablayoutlibrary.utils;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.core.view.ViewCompat;
 
-final class Utils {
+public final class Utils {
 
-    static int getMeasuredWidth(View v) {
+    public static int getMeasuredWidth(View v) {
         return (v == null) ? 0 : v.getMeasuredWidth();
     }
 
@@ -16,11 +16,11 @@ final class Utils {
         return (v == null) ? 0 : v.getWidth();
     }
 
-    static int getWidthWithMargin(View v) {
+    public static int getWidthWithMargin(View v) {
         return getWidth(v) + getMarginHorizontally(v);
     }
 
-    static int getStart(View v) {
+    public static int getStart(View v) {
         return getStart(v, false);
     }
 
@@ -35,7 +35,7 @@ final class Utils {
         }
     }
 
-    static int getEnd(View v) {
+    public static int getEnd(View v) {
         return getEnd(v, false);
     }
 
@@ -64,14 +64,14 @@ final class Utils {
         return ViewCompat.getPaddingEnd(v);
     }
 
-    static int getPaddingHorizontally(View v) {
+    public static int getPaddingHorizontally(View v) {
         if (v == null) {
             return 0;
         }
         return v.getPaddingLeft() + v.getPaddingRight();
     }
 
-    static int getMarginStart(View v) {
+    public static int getMarginStart(View v) {
         if (v == null) {
             return 0;
         }
@@ -79,7 +79,7 @@ final class Utils {
         return MarginLayoutParamsCompat.getMarginStart(lp);
     }
 
-    static int getMarginEnd(View v) {
+    public static int getMarginEnd(View v) {
         if (v == null) {
             return 0;
         }

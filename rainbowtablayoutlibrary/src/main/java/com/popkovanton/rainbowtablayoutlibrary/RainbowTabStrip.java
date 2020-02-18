@@ -13,11 +13,18 @@ import android.widget.TextView;
 
 import com.popkovanton.rainbowtablayoutlibrary.colorizer.DefaultTabColorizer;
 import com.popkovanton.rainbowtablayoutlibrary.colorizer.ITabColorizer;
+import com.popkovanton.rainbowtablayoutlibrary.utils.Utils;
+import com.popkovanton.rainbowtablayoutlibrary.utils.ViewUtils;
+
+import static androidx.appcompat.widget.ViewUtils.isLayoutRtl;
+import static com.popkovanton.rainbowtablayoutlibrary.utils.Utils.getEnd;
+import static com.popkovanton.rainbowtablayoutlibrary.utils.Utils.getMarginEnd;
+import static com.popkovanton.rainbowtablayoutlibrary.utils.ViewUtils.blendColors;
 
 public class RainbowTabStrip extends LinearLayout {
 
     private static final int DEFAULT_TAB_LINE_THICKNESS_DIPS = 4;
-    private static final byte DEFAULT_TAB_LINE_COLOR_ALPHA = 0x26;
+    private static final int DEFAULT_TAB_LINE_COLOR = 0xFF000000;
     private static final int SELECTED_INDICATOR_THICKNESS_DIPS = 4;
     private static final int DEFAULT_SELECTED_INDICATOR_COLOR = 0xFF33B5E5;
     private static final int DEFAULT_SEPARATOR_COLOR = 0xFF000000;
@@ -40,8 +47,6 @@ public class RainbowTabStrip extends LinearLayout {
     private final int mSelectedIndicatorThickness;
     private final Paint mTabBackgroundPaint;
     private final Paint mSelectedIndicatorPaint;
-
-    private final int mDefaultTabLineColor;
 
     private final Paint mSeparatorPaint;
     private final float mSeparatorHeight;
@@ -67,20 +72,16 @@ public class RainbowTabStrip extends LinearLayout {
 
         TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(android.R.attr.colorForeground, outValue, true);
-        final int themeForegroundColor = outValue.data;
-
-        mDefaultTabLineColor = setColorAlpha(themeForegroundColor,
-                DEFAULT_TAB_LINE_COLOR_ALPHA);
 
         mDefaultTabColorizer = new DefaultTabColorizer();
-        mDefaultTabColorizer.setTitleUnselectedColors(DEFAULT_TITLE_UNSELECTED_COLOR);
+        mDefaultTabColorizer.setTextUnselectedColors(DEFAULT_TITLE_UNSELECTED_COLOR);
         mDefaultTabColorizer.setBackgroundColors(DEFAULT_BACKGROUND_COLOR);
         mDefaultTabColorizer.setIndicatorColors(DEFAULT_SELECTED_INDICATOR_COLOR);
         mDefaultTabColorizer.setSeparatorColors(DEFAULT_SEPARATOR_COLOR);
+        mDefaultTabColorizer.setTabLineColors(DEFAULT_TAB_LINE_COLOR);
 
         mTabLineThickness = (int) (DEFAULT_TAB_LINE_THICKNESS_DIPS * density);
         mTabLinePaint = new Paint();
-        mTabLinePaint.setColor(mDefaultTabLineColor);
 
         mSelectedIndicatorThickness = (int) (SELECTED_INDICATOR_THICKNESS_DIPS * density);
         mSelectedIndicatorPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -117,7 +118,13 @@ public class RainbowTabStrip extends LinearLayout {
 
     void setTextUnselectedColors(int... colors) {
         mCustomTabColorizer = null;
-        mDefaultTabColorizer.setTitleUnselectedColors(colors);
+        mDefaultTabColorizer.setTextUnselectedColors(colors);
+        invalidate();
+    }
+
+    public void setTabLineColors(int[] colors) {
+        mCustomTabColorizer = null;
+        mDefaultTabColorizer.setTabLineColors(colors);
         invalidate();
     }
 
@@ -160,18 +167,17 @@ public class RainbowTabStrip extends LinearLayout {
         final ITabColorizer tabColorizer = getTabColorizer();
         TextView textView;
 
-        for (int i = 0; i < getChildCount(); i++) {
-            int color = tabColorizer.getIndicatorColor(i);
+        for (int i = 0; i < childCount; i++) {
             int colorBack = tabColorizer.getBackgroundColor(i);
+            int colorLine = tabColorizer.getTabLineColor(i);
             View selectedTitle = getChildAt(i);
             int left = selectedTitle.getLeft();
             int right = selectedTitle.getRight();
-            mTabLinePaint.setColor(color);
 
             drawBackground(canvas, left, right, height, colorBack);
 
             if (isDrawLine) {
-                drawTabLine(canvas, left, right, height, mTabLineThickness, mTabLinePaint);
+                drawTabLine(canvas, left, right, height, colorLine);
             }
         }
 
@@ -179,17 +185,21 @@ public class RainbowTabStrip extends LinearLayout {
             View selectedTitle = getChildAt(mSelectedPosition);
             int left = selectedTitle.getLeft();
             int right = selectedTitle.getRight();
-            int color = tabColorizer.getIndicatorColor(mSelectedPosition);
+            int colorIndicator = tabColorizer.getIndicatorColor(mSelectedPosition);
             int titleNextColor = textSelectedColor;
             int titlePreviousColor = textSelectedColor;
-            if (mSelectionOffset > 0f && mSelectedPosition < (getChildCount() - 1)) {
-                int nextColor = tabColorizer.getIndicatorColor(mSelectedPosition + 1);
+            if (mSelectionOffset > 0f && mSelectedPosition < (childCount - 1)) {
 
-                titleNextColor = blendColors(textSelectedColor, nextColor, mSelectionOffset);
+                titleNextColor = blendColors(
+                        textSelectedColor,
+                        tabColorizer.getIndicatorColor(mSelectedPosition + 1),
+                        mSelectionOffset);
 
-                if (color != nextColor) {
-                    color = blendColors(nextColor, color, mSelectionOffset);
-                }
+                colorIndicator = blendColors(
+                        tabColorizer.getIndicatorColor(mSelectedPosition + 1),
+                        colorIndicator,
+                        mSelectionOffset);
+
                 // Draw the selection partway between the tabs
                 View nextTitle = getChildAt(mSelectedPosition + 1);
                 left = (int) (mSelectionOffset * nextTitle.getLeft() +
@@ -198,15 +208,19 @@ public class RainbowTabStrip extends LinearLayout {
                         (1.0f - mSelectionOffset) * right);
             }
 
-            if (mSelectionOffset > 0f) {
-                int previousColor = tabColorizer.getIndicatorColor(mSelectedPosition);
-                titlePreviousColor = blendColors(previousColor, textSelectedColor, mSelectionOffset);
-            }
             if (isDrawIndicator) {
-                drawIndicator(canvas, left, right, height, color);
+                drawIndicator(canvas, left, right, height, colorIndicator);
             }
+
+            if (mSelectionOffset > 0f) {
+                titlePreviousColor = blendColors(tabColorizer.getIndicatorColor(
+                        mSelectedPosition),
+                        textSelectedColor,
+                        mSelectionOffset);
+            }
+
             if (isTitleBlend) {
-                if (mSelectedPosition < (getChildCount() - 1)) {
+                if (mSelectedPosition < (childCount - 1)) {
                     textView = (TextView) getChildAt(mSelectedPosition + 1);
                     textView.setTextColor(titleNextColor);
 
@@ -216,7 +230,7 @@ public class RainbowTabStrip extends LinearLayout {
             }
         }
 
-        for (int i = 0; i < getChildCount(); i++) {
+        for (int i = 0; i < childCount; i++) {
             int color = tabColorizer.getIndicatorColor(i);
             if (mSelectionOffset <= 0f) {
                 textView = (TextView) getChildAt(i);
@@ -227,7 +241,7 @@ public class RainbowTabStrip extends LinearLayout {
                 }
             }
         }
-        // Vertical separators between the titles
+
         if (isDrawSeparator) {
             drawSeparator(canvas, height, childCount);
         }
@@ -241,25 +255,25 @@ public class RainbowTabStrip extends LinearLayout {
         final int separatorTop = (height - dividerHeightPx) / 2;
         final int separatorBottom = separatorTop + dividerHeightPx;
 
-        final boolean isLayoutRtl = Utils.isLayoutRtl(this);
+        final boolean isLayoutRtl = isLayoutRtl(this);
         for (int i = 0; i < childCount - 1; i++) {
             View child = getChildAt(i);
-            int end = Utils.getEnd(child);
-            int endMargin = Utils.getMarginEnd(child);
+            int end = getEnd(child);
+            int endMargin = getMarginEnd(child);
             int separatorX = isLayoutRtl ? end - endMargin : end + endMargin;
             mSeparatorPaint.setColor(tabColorizer.getSeparatorColor(i));
             canvas.drawLine(separatorX, separatorTop, separatorX, separatorBottom, mSeparatorPaint);
         }
     }
 
-    private void drawTabLine(Canvas canvas, int left, int right, int height,
-                             int indicatorHeight, Paint paint) {
+    private void drawTabLine(Canvas canvas, int left, int right, int height, int color) {
+        mTabLinePaint.setColor(color);
         switch (mTabLinePosition) {
             case TOP:
-                canvas.drawRect(left, 0, right, indicatorHeight, paint);
+                canvas.drawRect(left, 0, right, mTabLineThickness, mTabLinePaint);
                 break;
             case BOTTOM:
-                canvas.drawRect(left, height - indicatorHeight, right, height, paint);
+                canvas.drawRect(left, height - mTabLineThickness, right, height, mTabLinePaint);
                 break;
 
         }
@@ -292,26 +306,5 @@ public class RainbowTabStrip extends LinearLayout {
 
     private ITabColorizer getTabColorizer() {
         return (mCustomTabColorizer != null) ? mCustomTabColorizer : mDefaultTabColorizer;
-    }
-
-    /**
-     * Set the alpha value of the {@code color} to be the given {@code alpha} value.
-     */
-    private static int setColorAlpha(int color, byte alpha) {
-        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
-    }
-
-    /**
-     * Blend {@code color1} and {@code color2} using the given ratio.
-     *
-     * @param ratio of which to blend. 1.0 will return {@code color1}, 0.5 will give an even blend,
-     *              0.0 will return {@code color2}.
-     */
-    private static int blendColors(int color1, int color2, float ratio) {
-        final float inverseRation = 1f - ratio;
-        float r = (Color.red(color1) * ratio) + (Color.red(color2) * inverseRation);
-        float g = (Color.green(color1) * ratio) + (Color.green(color2) * inverseRation);
-        float b = (Color.blue(color1) * ratio) + (Color.blue(color2) * inverseRation);
-        return Color.rgb((int) r, (int) g, (int) b);
     }
 }

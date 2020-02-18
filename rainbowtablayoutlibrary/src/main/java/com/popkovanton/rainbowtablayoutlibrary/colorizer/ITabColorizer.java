@@ -5,7 +5,9 @@ package com.popkovanton.rainbowtablayoutlibrary.colorizer;
  */
 public interface ITabColorizer {
 
-    int getTitleUnselectedColor(int position);
+    int getTabLineColor(int position);
+
+    int getTextUnselectedColor(int position);
 
     int getBackgroundColor(int position);
     /**

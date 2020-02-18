@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         RainbowTabLayout tabLayout = findViewById(R.id.tabs4);
         tabLayout.setTextSelectedColor(Color.WHITE);
         tabLayout.setBackgroundTabColors(Color.LTGRAY);
+        tabLayout.setTabLineColors(getColors());
         tabLayout.setIndicatorColors(getColors());
         tabLayout.setTabIndicatorPosition(ALL);
         tabLayout.setTabIndicator(true);
@@ -75,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
 
     private int[] getColors() {
         int[] colors = new int[TABS_COUNT];
-        colors[0] = getResources().getColor(R.color.red);
-        colors[1] = getResources().getColor(R.color.orange);
-        colors[2] = getResources().getColor(R.color.yellow);
-        colors[3] = getResources().getColor(R.color.green);
-        colors[4] = getResources().getColor(R.color.blue);
-        colors[5] = getResources().getColor(R.color.indigo);
-        colors[6] = getResources().getColor(R.color.violet);
+        colors[0] = getResources().getColor(R.color.color1);
+        colors[1] = getResources().getColor(R.color.color2);
+        colors[2] = getResources().getColor(R.color.color3);
+        colors[3] = getResources().getColor(R.color.color4);
+        colors[4] = getResources().getColor(R.color.color5);
+        colors[5] = getResources().getColor(R.color.color6);
+        colors[6] = getResources().getColor(R.color.color7);
         return colors;
     }
 }

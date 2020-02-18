@@ -14,7 +14,6 @@
         </attr>
         <attr name="rtl_tabSeparator" format="boolean" />
         <attr name="rtl_titleBlend" format="boolean" />
-        <attr name="rtl_tabMinWidthByMax" format="boolean" />
         <attr name="rtl_distributeEvenly" format="boolean" />
         <attr name="rtl_fontFamily" format="reference" />
         <attr name="rtl_tabViewPadding" format="dimension" />

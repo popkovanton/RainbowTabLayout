@@ -28,6 +28,8 @@ public class RainbowPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
+        if (position == 5) return "Biiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiig title";
+
         return "Title " + position;
     }
 
