@@ -4,6 +4,7 @@ import android.graphics.Path;
 
 class TabRect {
 
+    //TODO make this draw-util more abstract
     private TabRect() {
     }
 

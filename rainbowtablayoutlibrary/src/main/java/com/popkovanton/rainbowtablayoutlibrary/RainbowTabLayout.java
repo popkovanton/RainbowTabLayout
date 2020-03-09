@@ -3,18 +3,14 @@ package com.popkovanton.rainbowtablayoutlibrary;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +23,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+//TODO create listener for actions
 public class RainbowTabLayout extends HorizontalScrollView {
 
     private static final int TITLE_OFFSET_DIPS = 24;
@@ -103,9 +100,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) { //todo create tabLayout mode
-        // If we have a MeasureSpec which allows us to decide our height, try and use the default
-        // height
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) { //TODO create tabLayout mode
         final int idealHeight = Math.round(ViewUtils.dpToPx(getContext(), getDefaultHeight()));
         switch (MeasureSpec.getMode(heightMeasureSpec)) {
             case MeasureSpec.AT_MOST:
@@ -121,8 +116,6 @@ public class RainbowTabLayout extends HorizontalScrollView {
             default:
                 break;
         }
-
-        // Now super measure itself using the (possibly) modified height spec
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
@@ -235,7 +228,7 @@ public class RainbowTabLayout extends HorizontalScrollView {
      * Set the color to be used for unselected tabs title text
      * Providing one color will mean that all title text are colored with the same color.
      */
-    public void setTextUnselectedColors(int... colors) {
+    public void setTextUnselectedColors(int... colors) { //TODO get this colors for title text
         mTabStrip.setTextUnselectedColors(colors);
     }
 
